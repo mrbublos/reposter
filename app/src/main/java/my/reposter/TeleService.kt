@@ -1,5 +1,6 @@
 package my.reposter
 
+import android.util.Log
 import dev.whyoleg.ktd.Telegram
 import dev.whyoleg.ktd.api.TdApi
 import dev.whyoleg.ktd.api.chat.chat
@@ -58,11 +59,11 @@ object TeleService {
             .onEach {
                 when {
                     client.autoHandleAuthState(it, dbPath)      -> Unit
-                    client.handlePhoneAuthorization(it) -> Unit
+                    client.handlePhoneAuthorization(it, phone = "+") -> Unit
                     it is TdApi.AuthorizationStateReady -> throw AuthComplete
                 }
             }
-            .onAuthReady { println("Authorization completed") }
+            .onAuthReady { Log.i("reposter", "Authorization completed") }
             .collect()
     }
 }

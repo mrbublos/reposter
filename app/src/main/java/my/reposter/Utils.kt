@@ -35,7 +35,6 @@ val TelegramClient.authorizationStateUpdates: Flow<AuthorizationState>
 suspend fun TelegramClient.autoHandleAuthState(state: AuthorizationState, dbPath: String = "flow"): Boolean {
     when (state) {
         is AuthorizationStateWaitTdlibParameters -> setTdlibParameters(tdlibParameters(dbPath))
-        is AuthorizationStateWaitPhoneNumber -> setAuthenticationPhoneNumber("+")
         is AuthorizationStateWaitEncryptionKey   -> setDatabaseEncryptionKey(ByteArray(DEFAULT_BUFFER_SIZE).apply { fill(1) })
         else                                     -> return false
     }
