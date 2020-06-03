@@ -53,6 +53,7 @@ class RepostWork(private val context: Context, private val params: WorkerParamet
             .setContentTitle(title)
             .setTicker(title)
             .setContentText(progress)
+            .setSmallIcon(R.drawable.ic_notification_worker)
             .setOngoing(true)
             .addAction(android.R.drawable.ic_delete, cancel, intent)
             .build()
