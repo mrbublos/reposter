@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startJobs() {
+        val info = WorkManager.getInstance(baseContext).getWorkInfosForUniqueWork(tag)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -76,6 +77,6 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints)
             .addTag(tag)
             .build()
-        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.REPLACE, repost)
+        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.KEEP, repost)
     }
 }

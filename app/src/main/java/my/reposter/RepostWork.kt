@@ -13,7 +13,7 @@ import kotlinx.coroutines.coroutineScope
 import my.reposter.db.Db
 import my.reposter.db.RepostConfig
 
-class RepostWork(private val context: Context, private val params: WorkerParameters) : CoroutineWorker(context, params) {
+class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     companion object {
         const val tag = "reposter"
@@ -22,6 +22,7 @@ class RepostWork(private val context: Context, private val params: WorkerParamet
     private val dao = Db.instance(context = context).repostsDao()
 
     override suspend fun doWork(): Result {
+        Log.i(tag, "Starting repost job")
         setForeground(createForegroundInfo("Reposting"))
         dao.getReposts().map { config ->
             repostChat(config)
