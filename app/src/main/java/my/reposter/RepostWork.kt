@@ -29,8 +29,10 @@ class RepostWork(private val context: Context, private val params: WorkerParamet
         return Result.success()
     }
 
+    //RepostConfig(id=436863139197922, fromChatId=-1001203675600, toChatId=-1001144007035, lastMessageId=2097152)
     private suspend fun repostChat(repostConfig: RepostConfig) {
         try {
+            val chats = TeleService.getChats(100) // after restart this id cannot be used, so we need to call getChats
             val messages = TeleService.getMessages(repostConfig.fromChatId, repostConfig.lastMessageId).reversedArray()
             messages.forEach {
                 TeleService.sendMessage(repostConfig.toChatId, it)

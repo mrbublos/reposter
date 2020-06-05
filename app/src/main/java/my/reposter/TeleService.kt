@@ -62,7 +62,6 @@ object TeleService {
     suspend fun checkCode(code: String) = client.checkAuthenticationCode(code)
     suspend fun checkPassword(password: String) = client.checkAuthenticationPassword(password)
 
-    @InternalCoroutinesApi
     suspend fun auth(dbPath: String): Flow<State> {
         return client.authorizationStateUpdates
             .map {

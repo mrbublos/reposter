@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         stop.setOnClickListener {
-            WorkManager.getInstance(baseContext).cancelAllWorkByTag(tag)
+            WorkManager.getInstance(baseContext).cancelUniqueWork(tag)
         }
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -68,16 +68,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startJobs() {
-        WorkManager.getInstance(baseContext).cancelAllWorkByTag(tag)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val repost = PeriodicWorkRequestBuilder<RepostWork>(Duration.ofMinutes(1))
+        val repost = PeriodicWorkRequestBuilder<RepostWork>(Duration.ofMinutes(16))
             .setConstraints(constraints)
             .addTag(tag)
             .build()
-        if (!WorkManager.getInstance(baseContext).getWorkInfosByTagLiveData(tag).value.isNullOrEmpty()) { return }
-        WorkManager.getInstance(baseContext).enqueue(repost)
+        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.REPLACE, repost)
     }
 }
