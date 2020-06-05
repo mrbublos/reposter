@@ -24,12 +24,8 @@ class RepostWork(private val context: Context, private val params: WorkerParamet
     override suspend fun doWork(): Result {
         setForeground(createForegroundInfo("Reposting"))
         dao.getReposts().map { config ->
-            coroutineScope {
-                async {
-                    repostChat(config)
-                }
-            }
-        }.awaitAll()
+            repostChat(config)
+        }
         return Result.success()
     }
 

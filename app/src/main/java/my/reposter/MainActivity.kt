@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startJobs() {
+        WorkManager.getInstance(baseContext).cancelAllWorkByTag(tag)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()

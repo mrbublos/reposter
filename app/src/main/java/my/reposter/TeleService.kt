@@ -41,7 +41,7 @@ object TeleService {
     }
 
     suspend fun getMessages(chatId: Long, messageId: Long = 0L): Array<TdApi.Message> {
-        val messages = client.getChatHistory(chatId = chatId, fromMessageId = messageId)
+        val messages = client.getChatHistory(chatId = chatId, fromMessageId = messageId, limit = 100)
         return messages.messages
     }
 

@@ -12,20 +12,15 @@
     >
 
         <TextView
+                android:text="to"
+                android:layout_width="162dp"
+                android:layout_height="23dp" android:id="@+id/to"
+                tools:layout_editor_absoluteY="1dp" app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
                 android:text="from"
                 android:layout_width="125dp"
                 android:layout_height="22dp" android:id="@+id/from"
-                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/>
-        <TextView
-                android:text="to"
-                android:layout_width="53dp"
-                android:layout_height="22dp" android:id="@+id/to"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toEndOf="@+id/chatName"
-                app:layout_constraintEnd_toStartOf="@+id/checkBox"/>
-        <CheckBox
-                android:layout_width="93dp"
-                android:layout_height="22dp" android:id="@+id/remove"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent"/>
+                tools:layout_editor_absoluteY="0dp" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/to"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

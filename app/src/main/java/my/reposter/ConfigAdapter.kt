@@ -17,7 +17,6 @@ class ConfigAdapter(context: Context, resource: Int, data: List<RepostConfig>) :
         item?.let {
             view.from.text = item.fromChatId.toString()
             view.to.text = item.toChatId.toString()
-            view.remove.isChecked = false
         }
 
         return view
