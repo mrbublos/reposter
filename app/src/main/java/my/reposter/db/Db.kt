@@ -3,7 +3,7 @@ package my.reposter.db
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [RepostConfig::class], version = 1)
+@Database(entities = [RepostConfig::class, Setting::class], version = 1)
 abstract class Db : RoomDatabase() {
     companion object {
         @Volatile
@@ -27,13 +27,5 @@ abstract class Db : RoomDatabase() {
     }
 
     abstract fun repostsDao(): RepostsDao
+    abstract fun settingsDao(): SettingsDao
 }
-
-@Entity(tableName = "reposts")
-data class RepostConfig(
-    @PrimaryKey
-    val id: Long = System.nanoTime(),
-    val fromChatId: Long,
-    val toChatId: Long,
-    var lastMessageId: Long = 0L
-)

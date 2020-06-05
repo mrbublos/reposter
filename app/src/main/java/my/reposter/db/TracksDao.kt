@@ -17,3 +17,13 @@ interface RepostsDao {
     @Update
     fun update(data: RepostConfig)
 }
+
+
+@Entity(tableName = "reposts")
+data class RepostConfig(
+    @PrimaryKey
+    val id: Long = System.nanoTime(),
+    val fromChatId: Long,
+    val toChatId: Long,
+    var lastMessageId: Long = 0L
+)

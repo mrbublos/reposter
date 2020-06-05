@@ -6,11 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.config_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import my.reposter.db.Db
 
-@InternalCoroutinesApi
 class SettingsActivity : AppCompatActivity() {
 
     @Override

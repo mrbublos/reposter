@@ -20,7 +20,7 @@ class AddActivity : AppCompatActivity() {
     @Override
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.config_list)
+        setContentView(R.layout.config_add)
 
         val dao = Db.instance(context = applicationContext).repostsDao()
 

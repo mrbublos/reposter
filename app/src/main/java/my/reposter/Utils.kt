@@ -1,15 +1,19 @@
 package my.reposter
 
+import android.util.Log
 import dev.whyoleg.ktd.TelegramClient
 import dev.whyoleg.ktd.api.TdApi.*
 import dev.whyoleg.ktd.api.authentication.setAuthenticationPhoneNumber
 import dev.whyoleg.ktd.api.check.checkAuthenticationCode
+import dev.whyoleg.ktd.api.check.checkAuthenticationPassword
 import dev.whyoleg.ktd.api.database.setDatabaseEncryptionKey
 import dev.whyoleg.ktd.api.tdlib.setTdlibParameters
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.mapNotNull
+import java.time.Duration
 
 fun tdlibParameters(dbPath: String) = TdlibParameters(
     useTestDc = false,
@@ -17,9 +21,9 @@ fun tdlibParameters(dbPath: String) = TdlibParameters(
     filesDirectory = dbPath,
     useFileDatabase = true,
     useChatInfoDatabase = true,
-    useMessageDatabase = true,
-    apiId = 0,//provide id
-    apiHash = "", //provide hash
+    useMessageDatabase = false,
+    apiId = SecretSettings.API,//provide id
+    apiHash = SecretSettings.HASH, //provide hash
     systemLanguageCode = "en",
     deviceModel = "Mobile",
     systemVersion = "1",
@@ -30,7 +34,10 @@ fun tdlibParameters(dbPath: String) = TdlibParameters(
 )
 
 val TelegramClient.authorizationStateUpdates: Flow<AuthorizationState>
-    get() = updates.filterIsInstance<UpdateAuthorizationState>().mapNotNull { it.authorizationState }
+    get() = updates.filterIsInstance<UpdateAuthorizationState>().mapNotNull {
+        Log.i(TeleService.tag, "Received state " + it.authorizationState.javaClass.canonicalName)
+        it.authorizationState
+    }
 
 suspend fun TelegramClient.autoHandleAuthState(state: AuthorizationState, dbPath: String = "flow"): Boolean {
     when (state) {
@@ -41,19 +48,18 @@ suspend fun TelegramClient.autoHandleAuthState(state: AuthorizationState, dbPath
     return true
 }
 
-suspend fun TelegramClient.handlePhoneAuthorization(state: AuthorizationState, phone: String = "", code: String = ""): Boolean {
+suspend fun TelegramClient.handlePhoneAuthorization(state: AuthorizationState, phone: String = "", data: MutableList<String> = mutableListOf()): Boolean {
     when (state) {
         is AuthorizationStateWaitPhoneNumber -> {
             setAuthenticationPhoneNumber(
                 phoneNumber = phone,
                 settings = PhoneNumberAuthenticationSettings(
                     allowFlashCall = false,
-                    isCurrentPhoneNumber = false,
-                    allowSmsRetrieverApi = false
+                    isCurrentPhoneNumber = true,
+                    allowSmsRetrieverApi = true
                 )
             )
         }
-        is AuthorizationStateWaitCode        -> checkAuthenticationCode(code)
         else                                 -> return false
     }
     return true

@@ -1,26 +1,32 @@
 package my.reposter
 
-import android.util.Log
 import dev.whyoleg.ktd.Telegram
 import dev.whyoleg.ktd.api.TdApi
 import dev.whyoleg.ktd.api.chat.chat
 import dev.whyoleg.ktd.api.chat.getChat
+import dev.whyoleg.ktd.api.check.checkAuthenticationCode
+import dev.whyoleg.ktd.api.check.checkAuthenticationPassword
 import dev.whyoleg.ktd.api.message.getChatHistory
 import dev.whyoleg.ktd.api.message.sendMessage
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 object TeleService {
+
+    val tag = "reposter.log"
 
     val tg = Telegram()
     val client = tg.client()
 
     suspend fun getChats(limit: Int): List<Chat> {
-        val chatIds = client.chat(TdApi.GetChats(limit = limit)).chatIds.toTypedArray()
+        val chatIds = client.chat(TdApi.GetChats(limit = limit,
+            chatList = TdApi.ChatListMain(),
+            offsetOrder = Long.MAX_VALUE
+        )).chatIds.toTypedArray()
         return coroutineScope {
             chatIds.map { chatId ->
                 async {
@@ -53,17 +59,23 @@ object TeleService {
         client.sendMessage(chatId = chatId, inputMessageContent = inputMessage)
     }
 
+    suspend fun checkCode(code: String) = client.checkAuthenticationCode(code)
+    suspend fun checkPassword(password: String) = client.checkAuthenticationPassword(password)
+
     @InternalCoroutinesApi
-    suspend fun auth(dbPath: String) {
-        client.authorizationStateUpdates
-            .onEach {
+    suspend fun auth(dbPath: String): Flow<State> {
+        return client.authorizationStateUpdates
+            .map {
                 when {
-                    client.autoHandleAuthState(it, dbPath)      -> Unit
-                    client.handlePhoneAuthorization(it, phone = "+") -> Unit
-                    it is TdApi.AuthorizationStateReady -> throw AuthComplete
+                    client.autoHandleAuthState(it, dbPath)      -> State.SETUP
+                    client.handlePhoneAuthorization(it, SecretSettings.PHONE) -> State.SETUP
+                    it is TdApi.AuthorizationStateWaitCode -> State.CODE
+                    it is TdApi.AuthorizationStateWaitPassword -> State.PASSWORD
+                    it is TdApi.AuthorizationStateReady -> State.AUTHORIZED
+                    else -> State.SETUP
                 }
             }
-            .onAuthReady { Log.i("reposter", "Authorization completed") }
-            .collect()
     }
 }
+
+enum class State { SETUP, CODE, PASSWORD, AUTHORIZED }

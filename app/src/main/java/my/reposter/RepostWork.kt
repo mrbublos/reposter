@@ -15,6 +15,10 @@ import my.reposter.db.RepostConfig
 
 class RepostWork(private val context: Context, private val params: WorkerParameters) : CoroutineWorker(context, params) {
 
+    companion object {
+        const val tag = "reposter"
+    }
+
     private val dao = Db.instance(context = context).repostsDao()
 
     override suspend fun doWork(): Result {
@@ -38,7 +42,7 @@ class RepostWork(private val context: Context, private val params: WorkerParamet
                 dao.update(repostConfig)
             }
         } catch (e: Exception) {
-            Log.e("reposter", "Job error", e)
+            Log.e(TeleService.tag, "Job error", e)
         }
     }
 
