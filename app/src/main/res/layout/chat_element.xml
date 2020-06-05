@@ -13,19 +13,14 @@
 
         <TextView
                 android:text="chatName"
-                android:layout_width="125dp"
-                android:layout_height="22dp" android:id="@+id/chatName"
+                android:layout_width="247dp"
+                android:layout_height="35dp" android:id="@+id/chatName"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"/>
         <TextView
                 android:text="chatId"
-                android:layout_width="53dp"
-                android:layout_height="22dp" android:id="@+id/chatId"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toEndOf="@+id/chatName"
-                app:layout_constraintEnd_toStartOf="@+id/checkBox"/>
-        <CheckBox
-                android:layout_width="93dp"
-                android:layout_height="22dp" android:id="@+id/checkBox"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                android:layout_width="113dp"
+                android:layout_height="33dp" android:id="@+id/chatId"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/chatName"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,6 +1,7 @@
 package my.reposter
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ class ChatAdapter(context: Context, resource: Int, data: List<Chat>) : ArrayAdap
         item?.let {
             view.chatName.text = item.name
             view.chatId.text = item.id.toString()
-            view.checkBox.isChecked = item.selected
+            view.setBackgroundColor(if (item.selected) Color.GRAY else Color.WHITE )
         }
 
         return view
