@@ -6,12 +6,10 @@ import dev.whyoleg.ktd.api.chat.chat
 import dev.whyoleg.ktd.api.chat.getChat
 import dev.whyoleg.ktd.api.check.checkAuthenticationCode
 import dev.whyoleg.ktd.api.check.checkAuthenticationPassword
+import dev.whyoleg.ktd.api.log.setLogVerbosityLevel
 import dev.whyoleg.ktd.api.message.getChatHistory
 import dev.whyoleg.ktd.api.message.sendMessage
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -20,7 +18,9 @@ object TeleService {
     val tag = "reposter.log"
 
     val tg = Telegram()
-    val client = tg.client()
+    val client = tg.client().apply {
+        GlobalScope.launch { setLogVerbosityLevel(1) }
+    }
 
     suspend fun getChats(limit: Int): List<Chat> {
         val chatIds = client.chat(TdApi.GetChats(limit = limit,
@@ -41,7 +41,7 @@ object TeleService {
     }
 
     suspend fun getMessages(chatId: Long, messageId: Long = 0L): Array<TdApi.Message> {
-        val messages = client.getChatHistory(chatId = chatId, fromMessageId = messageId, limit = 100)
+        val messages = client.getChatHistory(chatId = chatId, fromMessageId = messageId, limit = 100, offset = -99)
         return messages.messages
     }
 

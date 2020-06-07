@@ -77,6 +77,6 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints)
             .addTag(tag)
             .build()
-        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.KEEP, repost)
+        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.REPLACE, repost)
     }
 }

@@ -30,16 +30,17 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
         return Result.success()
     }
 
-    //RepostConfig(id=436863139197922, fromChatId=-1001203675600, toChatId=-1001144007035, lastMessageId=2097152)
     private suspend fun repostChat(repostConfig: RepostConfig) {
         try {
             val chats = TeleService.getChats(100) // after restart this id cannot be used, so we need to call getChats
             val messages = TeleService.getMessages(repostConfig.fromChatId, repostConfig.lastMessageId).reversedArray()
-            messages.forEach {
-                TeleService.sendMessage(repostConfig.toChatId, it)
-                repostConfig.lastMessageId = it.id
-                dao.update(repostConfig)
-            }
+            Log.i(tag, "Found ${messages.size} messages to repost ")
+            messages.filter { it.id > repostConfig.lastMessageId }
+                .forEach {
+                    TeleService.sendMessage(repostConfig.toChatId, it)
+                    repostConfig.lastMessageId = it.id
+                    dao.update(repostConfig)
+                }
         } catch (e: Exception) {
             Log.e(TeleService.tag, "Job error", e)
         }
