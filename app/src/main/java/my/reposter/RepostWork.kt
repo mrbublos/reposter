@@ -37,7 +37,11 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
             Log.i(tag, "Found ${messages.size} messages to repost ")
             messages.filter { it.id > repostConfig.lastMessageId }
                 .forEach {
-                    TeleService.sendMessage(repostConfig.toChatId, it)
+                    try {
+                        TeleService.sendMessage(repostConfig.toChatId, it)
+                    } catch (e: Exception) {
+                        Log.e(tag, "Failed to send a message, skipping", e)
+                    }
                     repostConfig.lastMessageId = it.id
                     dao.update(repostConfig)
                 }

@@ -48,8 +48,19 @@ object TeleService {
     suspend fun sendMessage(chatId: Long, message: TdApi.Message) {
         val inputMessage = when (val content = message.content) {
             is TdApi.MessageText -> TdApi.InputMessageText(content.text)
+            is TdApi.MessagePhoto -> {
+                val photo = content.photo.sizes[0]
+                val thumbnail = TdApi.InputThumbnail(TdApi.InputFileRemote(photo.photo.remote.id!!), photo.width, photo.height)
+                TdApi.InputMessagePhoto(
+                    photo = TdApi.InputFileRemote(photo.photo.remote.id!!),
+                    caption = content.caption,
+                    thumbnail = thumbnail,
+                    height = photo.height,
+                    width = photo.width
+                )
+            }
             is TdApi.MessageDocument -> {
-                val inputFile = TdApi.InputFileRemote(content.document.document.remote.uniqueId)
+                val inputFile = TdApi.InputFileRemote(content.document.document.remote.id!!)
                 val thumbnailFile = TdApi.InputFileRemote(content.document.thumbnail?.photo?.remote?.uniqueId ?: "")
                 val thumbnail = TdApi.InputThumbnail(thumbnailFile)
                 TdApi.InputMessageDocument(inputFile, thumbnail, content.caption)
