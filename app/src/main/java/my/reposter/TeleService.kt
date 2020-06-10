@@ -12,6 +12,7 @@ import dev.whyoleg.ktd.api.message.sendMessage
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import my.reposter.adapters.Chat
 
 object TeleService {
 

@@ -15,20 +15,19 @@
 
         <Button
                 android:text="Submit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/button"
+                android:layout_width="250dp"
+                android:layout_height="45dp" android:id="@+id/button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintVertical_bias="0.543"/>
+                app:layout_constraintTop_toTopOf="parent"
+        />
         <Button
                 android:text="Stop jobs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/stop"
-                app:layout_constraintTop_toBottomOf="@id/button"
+                android:layout_width="250dp"
+                android:layout_height="45dp" android:id="@+id/stop"
                 app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintVertical_bias="0.288"/>
+                app:layout_constraintTop_toBottomOf="@+id/logs"/>
         <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -42,5 +41,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:layout_constraintGuide_begin="224dp"
                 android:id="@+id/guideline"/>
+        <Button
+                android:text="run now"
+                android:layout_width="250dp"
+                android:layout_height="45dp" android:id="@+id/runNow"
+                app:layout_constraintTop_toBottomOf="@+id/button"
+                android:layout_marginTop="24dp" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+        <Button
+                android:text="logs"
+                android:layout_width="250dp"
+                android:layout_height="45dp" android:id="@+id/logs"
+                app:layout_constraintTop_toBottomOf="@+id/runNow"
+                android:layout_marginTop="20dp" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+        <TextView
+                android:text="TextView"
+                android:layout_width="198dp"
+                android:layout_height="30dp" android:id="@+id/info"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/guideline" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -11,7 +11,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import my.reposter.db.Db
+import my.reposter.db.LogEntry
 import my.reposter.db.RepostConfig
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAmount
+import java.time.temporal.TemporalUnit
+import java.util.concurrent.TimeUnit
+import javax.xml.datatype.DatatypeConstants.DAYS
 
 class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -20,6 +28,7 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
     }
 
     private val dao = Db.instance(context = context).repostsDao()
+    private val logDao = Db.instance(context = context).logsDao()
 
     override suspend fun doWork(): Result {
         Log.i(tag, "Starting repost job")
@@ -27,6 +36,9 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
         dao.getReposts().map { config ->
             repostChat(config)
         }
+        val now  = LocalDateTime.now().toString()
+        logDao.insert(LogEntry(message = "Repost done at $now"))
+        logDao.deleteOld(Instant.now().minus(3, ChronoUnit.DAYS).toEpochMilli())
         return Result.success()
     }
 
@@ -46,6 +58,7 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
                     dao.update(repostConfig)
                 }
         } catch (e: Exception) {
+            logDao.insert(LogEntry(message = "Job error ${e.message}"))
             Log.e(TeleService.tag, "Job error", e)
         }
     }

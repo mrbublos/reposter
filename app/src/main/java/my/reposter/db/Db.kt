@@ -2,10 +2,14 @@ package my.reposter.db
 
 import android.content.Context
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [RepostConfig::class, Setting::class], version = 1)
+@Database(entities = [RepostConfig::class, Setting::class, LogEntry::class], version = 3)
 abstract class Db : RoomDatabase() {
+
     companion object {
+
         @Volatile
         private var instance: Db? = null
 
@@ -18,7 +22,9 @@ abstract class Db : RoomDatabase() {
                 if (i2 != null) {
                     i2
                 } else {
-                    val newInstance = Room.databaseBuilder(context.applicationContext, Db::class.java, "repost.db").build()
+                    val newInstance = Room.databaseBuilder(context.applicationContext, Db::class.java, "repost.db")
+                        .fallbackToDestructiveMigration()
+                        .build()
                     instance = newInstance
                     newInstance
                 }
@@ -28,4 +34,5 @@ abstract class Db : RoomDatabase() {
 
     abstract fun repostsDao(): RepostsDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun logsDao(): LogDao
 }

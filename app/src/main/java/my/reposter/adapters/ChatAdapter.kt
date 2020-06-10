@@ -1,4 +1,4 @@
-package my.reposter
+package my.reposter.adapters
 
 import android.content.Context
 import android.graphics.Color
@@ -7,11 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.chat_element.view.*
+import my.reposter.R
 
-class ChatAdapter(context: Context, resource: Int, data: List<Chat>) : ArrayAdapter<Chat>(context, resource, data) {
+class ChatAdapter(context: Context, private val resource: Int, data: List<Chat>) : ArrayAdapter<Chat>(context, resource, data) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.chat_element, null)
+        val view = convertView ?: LayoutInflater.from(context).inflate(resource, null)
         val item = getItem(position)
 
         item?.let {

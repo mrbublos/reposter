@@ -7,6 +7,7 @@ import kotlinx.android.synthetic.main.config_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import my.reposter.adapters.ConfigAdapter
 import my.reposter.db.Db
 
 class SettingsActivity : AppCompatActivity() {
@@ -23,7 +24,11 @@ class SettingsActivity : AppCompatActivity() {
         GlobalScope.launch {
             val configs = dao.getReposts()
             launch(Dispatchers.Main) {
-                configList.adapter = ConfigAdapter(applicationContext, R.layout.config_element, configs)
+                configList.adapter = ConfigAdapter(
+                    applicationContext,
+                    R.layout.config_element,
+                    configs
+                )
             }
         }
 

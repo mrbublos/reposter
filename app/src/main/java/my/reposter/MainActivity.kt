@@ -2,6 +2,7 @@ package my.reposter
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -21,19 +22,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        val instance = WorkManager.getInstance(baseContext)
+        instance.pruneWork()
+        instance.getWorkInfosByTagLiveData(tag).observe(this, Observer {
+            val jobState = it.lastOrNull()?.state ?: WorkInfo.State.FAILED
+            GlobalScope.launch(Dispatchers.Main) { info.text = jobState.toString() }
+        })
+
         data.hint = "Enter code"
         state.observe(this, Observer {
             when (it) {
                 State.SETUP -> data.hint = "Processing.."
                 State.CODE -> {
+                    data.visibility = View.VISIBLE
                     data.text.clear()
                     data.hint = "Enter code"
                 }
                 State.PASSWORD -> {
+                    data.visibility = View.VISIBLE
                     data.text.clear()
                     data.hint = "Enter password"
                 }
                 State.AUTHORIZED -> {
+                    data.visibility = View.INVISIBLE
                     startJobs()
                     openSettingScreen()
                 }
@@ -54,6 +66,15 @@ class MainActivity : AppCompatActivity() {
             WorkManager.getInstance(baseContext).cancelUniqueWork(tag)
         }
 
+        runNow.setOnClickListener {
+            startJobs()
+        }
+
+        logs.setOnClickListener {
+            val intent = Intent(this, LogsActivity::class.java)
+            startActivity(intent)
+        }
+
         GlobalScope.launch(Dispatchers.IO) {
             TeleService.auth(filesDir.absolutePath)
                 .collect {
@@ -68,7 +89,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startJobs() {
-        val info = WorkManager.getInstance(baseContext).getWorkInfosForUniqueWork(tag)
+        val instance = WorkManager.getInstance(baseContext)
+        instance.cancelAllWorkByTag(tag)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -77,6 +99,6 @@ class MainActivity : AppCompatActivity() {
             .setConstraints(constraints)
             .addTag(tag)
             .build()
-        WorkManager.getInstance(baseContext).enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.REPLACE, repost)
+        instance.enqueueUniquePeriodicWork(tag, ExistingPeriodicWorkPolicy.REPLACE, repost)
     }
 }

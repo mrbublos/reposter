@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import my.reposter.TeleService.tag
+import my.reposter.adapters.Chat
+import my.reposter.adapters.ChatAdapter
 import my.reposter.db.Db
 import my.reposter.db.RepostConfig
 
@@ -28,10 +30,24 @@ class AddActivity : AppCompatActivity() {
 
         GlobalScope.launch(Dispatchers.IO) {
             val fromChannels = TeleService.getChats(100)
-            val toChannels = fromChannels.map { Chat(it.name, it.id, it.selected) }
+            val toChannels = fromChannels.map {
+                Chat(
+                    it.name,
+                    it.id,
+                    it.selected
+                )
+            }
             launch(Dispatchers.Main) {
-                fromList.adapter = ChatAdapter(applicationContext, R.layout.chat_element, fromChannels)
-                toList.adapter = ChatAdapter(applicationContext, R.layout.chat_element, toChannels)
+                fromList.adapter = ChatAdapter(
+                    applicationContext,
+                    R.layout.chat_element,
+                    fromChannels
+                )
+                toList.adapter = ChatAdapter(
+                    applicationContext,
+                    R.layout.chat_element,
+                    toChannels
+                )
             }
         }
 
