@@ -1,11 +1,11 @@
 package my.reposter.db
 
 import android.content.Context
-import androidx.room.*
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 
-@Database(entities = [RepostConfig::class, Setting::class, LogEntry::class], version = 3)
+@Database(entities = [RepostConfig::class, Setting::class, LogEntry::class], version = 4)
 abstract class Db : RoomDatabase() {
 
     companion object {
