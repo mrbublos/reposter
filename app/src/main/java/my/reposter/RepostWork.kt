@@ -7,21 +7,16 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.takeWhile
 import my.reposter.db.Db
 import my.reposter.db.LogEntry
 import my.reposter.db.RepostConfig
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAmount
-import java.time.temporal.TemporalUnit
-import java.util.concurrent.TimeUnit
-import javax.xml.datatype.DatatypeConstants.DAYS
 
-class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+class RepostWork(val context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     companion object {
         const val tag = "reposter"
@@ -31,15 +26,33 @@ class RepostWork(context: Context, params: WorkerParameters) : CoroutineWorker(c
     private val logDao = Db.instance(context = context).logsDao()
 
     override suspend fun doWork(): Result {
+        val now  = LocalDateTime.now().toString()
+
+        // if teleservice was destroyed, we need to call auth again
+        if (TeleService.state == State.SETUP) {
+            TeleService.auth(context.filesDir.absolutePath)
+                .takeWhile { it == State.SETUP }
+                .collect()
+        }
+
+        when(TeleService.state) {
+            State.AUTHORIZED -> repostAll(now)
+            else -> {
+                logDao.insert(LogEntry(message = "Not authorized state at $now"))
+            }
+        }
+
+        return Result.success()
+    }
+
+    private suspend fun repostAll(now: String) {
         Log.i(tag, "Starting repost job")
         setForeground(createForegroundInfo("Reposting"))
         dao.getReposts().map { config ->
             repostChat(config)
         }
-        val now  = LocalDateTime.now().toString()
         logDao.insert(LogEntry(message = "Repost done at $now"))
         logDao.deleteOld(Instant.now().minus(3, ChronoUnit.DAYS).toEpochMilli())
-        return Result.success()
     }
 
     private suspend fun repostChat(repostConfig: RepostConfig) {

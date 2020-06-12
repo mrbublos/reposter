@@ -23,6 +23,8 @@ object TeleService {
         GlobalScope.launch { setLogVerbosityLevel(1) }
     }
 
+    var state = State.SETUP
+
     suspend fun getChats(limit: Int): List<Chat> {
         val chatIds = client.chat(TdApi.GetChats(limit = limit,
             chatList = TdApi.ChatListMain(),
@@ -77,7 +79,7 @@ object TeleService {
     suspend fun auth(dbPath: String): Flow<State> {
         return client.authorizationStateUpdates
             .map {
-                when {
+                state = when {
                     client.autoHandleAuthState(it, dbPath)      -> State.SETUP
                     client.handlePhoneAuthorization(it, SecretSettings.PHONE) -> State.SETUP
                     it is TdApi.AuthorizationStateWaitCode -> State.CODE
@@ -85,6 +87,7 @@ object TeleService {
                     it is TdApi.AuthorizationStateReady -> State.AUTHORIZED
                     else -> State.SETUP
                 }
+                state
             }
     }
 }
